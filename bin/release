@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+BUILD_OUTPUT_DIR="$1"
+RELEASE_OUTPUT_DIR="$2"
+
+if [ -f "${BUILD_OUTPUT_DIR}/connection.json" ]; then
+   mkdir -p "${RELEASE_OUTPUT_DIR}/chaincode/server"
+   cp "${BUILD_OUTPUT_DIR}/connection.json" "${RELEASE_OUTPUT_DIR}/chaincode/server/"
+
+   exit 0
+fi
+
+exit 1

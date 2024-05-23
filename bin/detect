@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+CHAINCODE_SOURCE_DIR=$1
+CHAINCODE_METADATA_DIR=$2
+# get directory of this script
+# jq should be in the same dir
+dir="$(dirname "$(readlink -f -- "$0")")"
+
+if [ "$("${dir}/jq" -r .type "${CHAINCODE_METADATA_DIR}/metadata.json")" == "external" ]; then
+    exit 0
+fi
+
+exit 1

@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -euo pipefail
+
+CHAINCODE_SOURCE_DIR=$1
+CHAINCODE_METADATA_DIR=$2
+BUILD_OUTPUT_DIR=$3
+# get directory of this script
+# jq should be in the same dir
+dir="$(dirname "$(readlink -f -- "$0")")"
+
+if [ ! -f "${CHAINCODE_SOURCE_DIR}/connection.json" ]; then
+    >&2 echo "${CHAINCODE_SOURCE_DIR}/connection.json not found"
+    exit 1
+fi
+
+# read metadata to get chaincode label, e.g. substrate-2-164-0
+CC_LABEL="$(cat "${CHAINCODE_SOURCE_DIR}/metadata/cc_label")"
+# PEER_INDEX is supplied as an environment variable from the peer using
+# `propagateEnvironment` in core.yaml
+CC_HOST="${CC_LABEL}-peer${PEER_INDEX}:80"
+SOURCE="${CHAINCODE_SOURCE_DIR}/connection.json"
+DEST="${BUILD_OUTPUT_DIR}/connection.json"
+cat $SOURCE | "${dir}/jq" --arg cchost "$CC_HOST" '. + {address: $cchost}' > $DEST
