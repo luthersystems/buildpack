@@ -1,9 +1,11 @@
 PROJECT=buildpack
 PROJECT_PATH=github.com/luthersystems/${PROJECT}
 
+TAG_SUFFIX ?= -amd64
 GIT_TAG ?= $(shell git describe --tags --exact-match 2>/dev/null)
 GIT_REVISION ?= $(shell git rev-parse --short HEAD)
 VERSION ?= $(if $(strip $(GIT_TAG)),$(GIT_TAG),$(GIT_REVISION))
+BUILD_VERSION ?= ${VERSION}${TAG_SUFFIX}
 
 CP=cp
 RM=rm
