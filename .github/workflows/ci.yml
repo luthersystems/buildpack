@@ -1,0 +1,28 @@
+name: CI Build
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    needs: test
+    name: ${{ matrix.image }} - ${{ matrix.arch }} docker build
+    runs-on: ${{ fromJSON('{"arm64":"buildjet-2vcpu-ubuntu-2204-arm","amd64":"ubuntu-20.04"}')[matrix.arch] }}
+    strategy:
+      matrix:
+        arch:
+          - amd64
+          - arm64
+        image:
+          - .
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # include tags for VERSION detection
+      - name: Build container
+        uses: ./.github/actions/build-docker-images
+        with:
+          arch: ${{ matrix.arch }}
+          image: ${{ matrix.image }}
+          git_rev: $GITHUB_SHA
